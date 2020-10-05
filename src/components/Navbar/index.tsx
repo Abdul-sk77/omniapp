@@ -1,21 +1,22 @@
 import React, { useState } from "react";
+import TreeMenu from "react-simple-tree-menu";
 import {
   Collapse,
   Nav,
   Navbar as RNav,
   NavbarBrand,
-  NavbarText,
   NavbarToggler,
   NavItem,
 } from "reactstrap";
+import { CurrencySwitch } from "../CurrencySwitch";
 import Logo from "./fabLogo.png";
-import { map } from "ramda";
+import searchIcon from "./search.svg";
 import "./navbar.scss";
 import navConfig from "./config.json";
-import { isMobile } from "../../generalUtils";
-import TreeMenu from "react-simple-tree-menu";
-import { CurrencySwitch } from "../CurrencySwitch";
-// as an array
+import { SignUpPage } from "../AccountPage/SignUpPage";
+import { Login } from "../AccountPage/Login";
+
+
 const treeData = [
   {
     key: "first-level-node-1",
@@ -39,30 +40,86 @@ const treeData = [
     label: "Node 2 at the first level",
   },
 ];
+
+const tree = navConfig.items.map((item) => {
+  const obj = {
+    key: item.id,
+    label: item.displayName,
+    nodes: (item.childCategoriesMain as any).map((i: any) => {
+      return { label: i.displayName, key: i.id, nodes: [] };
+    }),
+  };
+  return obj;
+});
+
 export const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenBurger, setIsOpenBurger] = useState(false);
   const [activeItem, setActiveItem] = useState("");
-
+  const [isLogin, isOpenLogin] = useState(false);
+  const [isSignUp, isOpenSignUp] = useState(false);
   const toggle = () => setIsOpen(!isOpen);
+  console.log(">> isLogin", isLogin);
   return (
     <RNav color="light" light fixed="top" expand="md">
+      <Login
+        setOpen={(isOpen: boolean) => isOpenLogin(isOpen)}
+        isOpen={isLogin}
+      />
+      <SignUpPage
+        setOpen={(isOpen: boolean) => isOpenSignUp(isOpen)}
+        isOpen={isSignUp}
+      />
       <NavbarBrand>
         <i
-          className="fa fa-bars"
+          className="fa fa-bars hidden-lg"
           aria-hidden="true"
           onClick={() => setIsOpenBurger(true)}
         >
           {" "}
         </i>
-        <img width="120px" src={Logo} alt="Logo" />
+        <a href="/">
+          {" "}
+          <img
+            className="LogoOnHamburger"
+            width="120px"
+            src={Logo}
+            alt="Logo"
+          />
+        </a>
       </NavbarBrand>
       <div
         className={`HambburgerSideMenu ${
           isOpenBurger ? "HM-open" : "HM-close"
         }`}
       >
-        <h1>Close</h1>
+        <div className="MainLogo">
+          {" "}
+          <a href="/">
+            {" "}
+            <img
+              className="LogoOnHamburger"
+              width="120px"
+              src={Logo}
+              alt="Logo"
+            />
+          </a>
+        </div>{" "}
+        <div className="AuthButtons">
+          <div style={{ margin: "0px 10px" }} onClick={() => isOpenLogin(true)}>
+            Login
+          </div>
+          &nbsp;&nbsp;
+          <div
+            style={{ margin: "0px 10px" }}
+            onClick={() => isOpenSignUp(true)}
+          >
+            SignUp
+          </div>
+        </div>
+        <div className="TreeNode hidden-lg">
+          <TreeMenu data={tree as any} hasSearch={false} />
+        </div>{" "}
         <i
           onClick={() => setIsOpenBurger(false)}
           className="fa fa-times"
@@ -80,30 +137,45 @@ export const Navbar = () => {
                   className="SearchInput"
                   placeholder="Enter your search text here..."
                 />
-                <i className="fa fa-search" aria-hidden="true"></i>
+                {/* <i className="fa fa-search" aria-hidden="true"></i> */}
+                <img className="searchIcon" src={searchIcon} alt="" />
               </div>
             </NavItem>
-            <div className="TreeNode hidden-lg">
-              <TreeMenu data={treeData} hasSearch={false} />
-            </div>
           </Nav>
+          <div
+            className="AccountLG"
+            style={{ margin: "0px 10px" }}
+            onClick={() => isOpenLogin(true)}
+          >
+            Login
+          </div>
+          &nbsp;&nbsp;
+          {/* <div
+            style={{ margin: "0px 10px" }}
+            onClick={() => isOpenSignUp(true)}
+            className="AccountLG"
+          >
+            SignUp
+          </div> */}
           <CurrencySwitch />
           {/* <NavbarText>
             Sign In | Sign Up | Track Your Order | Store Locator
           </NavbarText> */}
         </Collapse>
 
-        {/* <div className="MenuItemContainer hidden-xs ">
+        <div className="MenuItemContainer hidden-xs ">
           {navConfig.items.map((itemData, index) => {
+            console.log(index);
             return (
               <>
                 <div
                   onMouseEnter={() => setActiveItem(itemData.repositoryId)}
+                  onMouseLeave={() => setActiveItem("")}
                   className="NavItem"
                   key={index}
                 >
                   {itemData.displayName}
-                  <i className="fa fa-chevron-down"></i>
+                  <i className="fa fa-angle-down" style={{marginLeft :"5px"}}></i>
                   {activeItem === itemData.repositoryId && (
                     <div
                       onMouseLeave={() => setActiveItem("")}
@@ -116,7 +188,7 @@ export const Navbar = () => {
               </>
             );
           })}
-        </div> */}
+        </div>
       </div>
     </RNav>
   );
