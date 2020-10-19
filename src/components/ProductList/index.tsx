@@ -46,6 +46,7 @@ export class ProductListImpl extends React.PureComponent<
   }
 
   render() {
+    console.log("this.props.productList", this.props.productList)
     return (
       <div className="ProductListPageContainer M-Full-Width">
         {/* <Login /> */}
