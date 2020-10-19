@@ -5,7 +5,7 @@
   outline: none !important;
 }
 body {
-  text-align: center;
+  // text-align: center;
 }
 
 .ImageLarge {
@@ -688,6 +688,11 @@ body {
 
   .AccountLG {
     display: none;
+  }
+  .image {
+    .home-img {
+      margin-top: -40px;
+    }
   }
 }
 .ProductCode {
